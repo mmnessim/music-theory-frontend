@@ -8,6 +8,8 @@ import {
   voiceChord,
   abcHeader,
   type Inversion,
+  type Octave,
+  type ScaleNumeral,
 } from "@mmnessim/music-theory";
 import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
@@ -15,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { RootSelector } from "./RootSelector";
 import { ModeSelector } from "./ModeSelector";
 import { InversionSelector } from "./InversionSelector";
+import { OctaveSelector } from "./OctaveSelector";
 
 export function ProgressionGenerator() {
   const [root, setRoot] = useState<PitchClass>("C");
@@ -30,6 +33,15 @@ export function ProgressionGenerator() {
       VII: "first",
     },
   );
+  const [octaves, setOctaves] = useState<Record<ScaleNumeral, Octave>>({
+    I: 4,
+    II: 4,
+    III: 4,
+    IV: 4,
+    V: 4,
+    VI: 4,
+    VII: 4,
+  });
   const [progression, setProgression] = useState<ChordProgression>();
   const [abc, setAbc] = useState("");
   const notationRef = useRef<HTMLDivElement>(null);
@@ -41,7 +53,7 @@ export function ProgressionGenerator() {
     const header = abcHeader({ title: "Test" });
     const abcString = newProgression.items.map((i) => {
       const inv = inversions[i.numeral];
-      return voicedChordToAbc(voiceChord(i.chord, inv === "root" ? 4 : 4, inv));
+      return voicedChordToAbc(voiceChord(i.chord, octaves[i.numeral], inv));
     });
     const full = header + "\n" + abcString.join("8| ") + "8";
     setAbc(full);
@@ -96,6 +108,7 @@ export function ProgressionGenerator() {
           inversions={inversions}
           onInvChange={setInversions}
         />
+        <OctaveSelector octaves={octaves} onOctaveChange={setOctaves} />
       </div>
       <button onClick={generateProg}>Generate</button>
       <div id="paper"></div>
