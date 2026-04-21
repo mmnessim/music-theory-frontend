@@ -14,10 +14,22 @@ import "abcjs/abcjs-audio.css";
 import { useEffect, useRef, useState } from "react";
 import { RootSelector } from "./RootSelector";
 import { ModeSelector } from "./ModeSelector";
+import { InversionSelector } from "./InversionSelector";
 
 export function ProgressionGenerator() {
   const [root, setRoot] = useState<PitchClass>("C");
   const [mode, setMode] = useState<Mode>("major");
+  const [inversions, setInversions] = useState<Record<ScaleNumeral, Inversion>>(
+    {
+      I: "root",
+      II: "first",
+      III: "second",
+      IV: "first",
+      V: "root",
+      VI: "first",
+      VII: "first",
+    },
+  );
   const [progression, setProgression] = useState<ChordProgression>();
   const [abc, setAbc] = useState("");
   const notationRef = useRef<HTMLDivElement>(null);
@@ -28,29 +40,11 @@ export function ProgressionGenerator() {
     setProgression(newProgression);
     const header = abcHeader({ title: "Test" });
     const abcString = newProgression.items.map((i) => {
-      const inv = inversions(i);
-      return voicedChordToAbc(voiceChord(i.chord, inv === "root" ? 4 : 3, inv));
+      const inv = inversions[i.numeral];
+      return voicedChordToAbc(voiceChord(i.chord, inv === "root" ? 4 : 4, inv));
     });
     const full = header + "\n" + abcString.join("8| ") + "8";
     setAbc(full);
-  }
-  function inversions(item: ProgressionItem): Inversion {
-    switch (item.numeral) {
-      case "I":
-        return "root";
-      case "II":
-        return "first";
-      case "III":
-        return "second";
-      case "IV":
-        return "first";
-      case "V":
-        return "first";
-      case "VI":
-        return "first";
-      case "VII":
-        return "first";
-    }
   }
 
   useEffect(() => {
@@ -98,6 +92,10 @@ export function ProgressionGenerator() {
       <div className="flex gap-4">
         <RootSelector root={root} onRootChange={setRoot} />
         <ModeSelector mode={mode} onModeChange={setMode} />
+        <InversionSelector
+          inversions={inversions}
+          onInvChange={setInversions}
+        />
       </div>
       <button onClick={generateProg}>Generate</button>
       <div id="paper"></div>
