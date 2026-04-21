@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  /* Base warm neutral palette */
+  --color-primary: #8b5e3c; /* warm brown-orange */
+  --color-on-primary: #ffffff;
+  --color-primary-container: #f5dec8; /* soft warm tan */
+  --color-on-primary-container: #3b1f07;
+
+  --color-secondary: #7a6652; /* muted taupe */
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #ede0d4;
+  --color-on-secondary-container: #2c1d0e;
+
+  --color-surface: #faf6f2; /* warm off-white */
+  --color-on-surface: #1e1610;
+  --color-surface-variant: #ede0d4;
+  --color-on-surface-variant: #52443a;
+
+  --color-background: #faf6f2;
+  --color-on-background: #1e1610;
+
+  --color-outline: #9c8474;
+  --color-outline-variant: #d4c4b8;
+}
+
+@layer base {
+  :root {
+    font-family: sans-serif;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+  }
+}
+
+.select-input {
+  @apply bg-zinc-900 text-white border border-zinc-600 rounded-md px-3 py-2 text-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-zinc-400;
+}
+
+.card {
+  @apply rounded-xl bg-surface-variant border border-outline-variant 
+         flex flex-col items-start justify-start 
+         p-4 gap-2
+         text-on-surface-variant text-sm;
+}
