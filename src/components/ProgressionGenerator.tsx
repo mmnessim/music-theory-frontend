@@ -36,11 +36,11 @@ export function ProgressionGenerator() {
   const [octaves, setOctaves] = useState<Record<ScaleNumeral, Octave>>({
     I: 4,
     II: 4,
-    III: 4,
-    IV: 4,
-    V: 4,
-    VI: 4,
-    VII: 4,
+    III: 3,
+    IV: 3,
+    V: 3,
+    VI: 3,
+    VII: 3,
   });
   const [progression, setProgression] = useState<ChordProgression>();
   const [abc, setAbc] = useState("");
@@ -110,7 +110,9 @@ export function ProgressionGenerator() {
         />
         <OctaveSelector octaves={octaves} onOctaveChange={setOctaves} />
       </div>
-      <button onClick={generateProg}>Generate</button>
+      <button onClick={generateProg} className="bg-primary text-on-primary 
+        px-6 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg 
+        active:shadow-sm transition-all cursor-pointer">Generate</button>
       <div id="paper"></div>
       <div ref={notationRef} />
       <div ref={audioRef} style={{ marginTop: "1rem" }} />
