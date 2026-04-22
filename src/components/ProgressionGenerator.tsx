@@ -47,13 +47,20 @@ export function ProgressionGenerator() {
   const notationRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLDivElement>(null);
 
+  const [showRoot, setShowRoot] = useState<boolean>(false);
+  const [showMode, setShowMode] = useState<boolean>(false);
+  const [showInv, setShowInv] = useState<boolean>(false);
+  const [showOct, setShowOct] = useState<boolean>(false);
+
   function generateProg() {
     const newProgression = randomChordProgression(root, mode);
     setProgression(newProgression);
     const header = abcHeader({ title: "Test" });
     const abcString = newProgression.items.map((i) => {
       const inv = inversions[i.numeral];
-      return voicedChordToAbc(voiceChord(i.chord, octaves[i.numeral], inv));
+      const voicedChord = voiceChord(i.chord, octaves[i.numeral], inv);
+      if (!voicedChord) return;
+      return voicedChordToAbc(voicedChord);
     });
     const full = header + "\n" + abcString.join("8| ") + "8";
     setAbc(full);
@@ -62,7 +69,7 @@ export function ProgressionGenerator() {
   useEffect(() => {
     if (!abc || !notationRef.current || !audioRef.current) return;
 
-    const visualObj = abcjs.renderAbc(notationRef.current, abc);
+    const visualObj = abcjs.renderAbc(notationRef.current, abc, { staffwidth: 700 });
 
     if (abcjs.synth.supportsAudio()) {
       const synth = new abcjs.synth.SynthController();
@@ -72,7 +79,7 @@ export function ProgressionGenerator() {
         displayPlay: true,
         displayProgress: true,
       });
-      synth.setTune(visualObj[0]!, false, { tempo: 120 });
+      synth.setTune(visualObj[0]!, false);
     }
   }, [abc]);
 
@@ -101,28 +108,52 @@ export function ProgressionGenerator() {
       <p className="text-on-surface-variant text-sm mb-6">
         Generate chord progressions from a key and scale.
       </p>
-      <div className="flex gap-4">
-        <RootSelector root={root} onRootChange={setRoot} />
-        <ModeSelector mode={mode} onModeChange={setMode} />
-        <InversionSelector
-          inversions={inversions}
-          onInvChange={setInversions}
-        />
-        <OctaveSelector octaves={octaves} onOctaveChange={setOctaves} />
+      <div className="flex flex-wrap gap-2 mb-4">
+        {(
+          [
+            ["Root", showRoot, setShowRoot],
+            ["Mode", showMode, setShowMode],
+            ["Inversions", showInv, setShowInv],
+            ["Octaves", showOct, setShowOct],
+          ] as const
+        ).map(([label, show, setShow]) => (
+          <button
+            key={label}
+            onClick={() => setShow((v) => !v)}
+            className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
+              show
+                ? "bg-primary text-on-primary border-primary"
+                : "bg-transparent text-primary border-primary"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-      <button onClick={generateProg} className="bg-primary text-on-primary 
-        px-6 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {showRoot && <RootSelector root={root} onRootChange={setRoot} />}
+        {showMode && <ModeSelector mode={mode} onModeChange={setMode} />}
+        {showInv && <InversionSelector inversions={inversions} onInvChange={setInversions}/>}
+        {showOct && <OctaveSelector octaves={octaves} onOctaveChange={setOctaves} />}
+      </div>
+      <button onClick={generateProg} className="mt-4 bg-primary text-on-primary
+        px-6 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg
         active:shadow-sm transition-all cursor-pointer">Generate</button>
       <div id="paper"></div>
-      <div ref={notationRef} />
+      <div className="overflow-x-auto">
+        <div ref={notationRef} className="min-w-max" />
+      </div>
       <div ref={audioRef} style={{ marginTop: "1rem" }} />
-      {progression &&
-        progression.items.map((item, index) => (
-          <div className="card" key={index}>
-            {displayNumeral(item)} {item.chord.chordType} {item.chord.root}{" "}
-            {item.chord.third} {item.chord.fifth} {item.chord.seventh}
-          </div>
-        ))}
+      {progression && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-4">
+          {progression.items.map((item, index) => (
+            <div className="card" key={index}>
+              {displayNumeral(item)} {item.chord.chordType} {item.chord.root}{" "}
+              {item.chord.third} {item.chord.fifth} {item.chord.seventh}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

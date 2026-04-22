@@ -23,7 +23,7 @@ export function InversionSelector({
         {numerals.map((numeral) => (
           <div key={numeral} className="flex items-center gap-4">
             <span className="w-8 font-semibold">{numeral}</span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {inversionOptions.map((inv) => (
                 <button
                   key={inv}
