@@ -47,8 +47,8 @@ export function ProgressionGenerator() {
   const notationRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLDivElement>(null);
 
-  const [showRoot, setShowRoot] = useState<boolean>(false);
-  const [showMode, setShowMode] = useState<boolean>(false);
+  const [showRoot, setShowRoot] = useState<boolean>(true);
+  const [showMode, setShowMode] = useState<boolean>(true);
   const [showInv, setShowInv] = useState<boolean>(false);
   const [showOct, setShowOct] = useState<boolean>(false);
 
@@ -69,7 +69,9 @@ export function ProgressionGenerator() {
   useEffect(() => {
     if (!abc || !notationRef.current || !audioRef.current) return;
 
-    const visualObj = abcjs.renderAbc(notationRef.current, abc, { staffwidth: 700 });
+    const visualObj = abcjs.renderAbc(notationRef.current, abc, {
+      staffwidth: 700,
+    });
 
     if (abcjs.synth.supportsAudio()) {
       const synth = new abcjs.synth.SynthController();
@@ -133,12 +135,24 @@ export function ProgressionGenerator() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {showRoot && <RootSelector root={root} onRootChange={setRoot} />}
         {showMode && <ModeSelector mode={mode} onModeChange={setMode} />}
-        {showInv && <InversionSelector inversions={inversions} onInvChange={setInversions}/>}
-        {showOct && <OctaveSelector octaves={octaves} onOctaveChange={setOctaves} />}
+        {showInv && (
+          <InversionSelector
+            inversions={inversions}
+            onInvChange={setInversions}
+          />
+        )}
+        {showOct && (
+          <OctaveSelector octaves={octaves} onOctaveChange={setOctaves} />
+        )}
       </div>
-      <button onClick={generateProg} className="mt-4 bg-primary text-on-primary
+      <button
+        onClick={generateProg}
+        className="mt-4 bg-primary text-on-primary
         px-6 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg
-        active:shadow-sm transition-all cursor-pointer">Generate</button>
+        active:shadow-sm transition-all cursor-pointer"
+      >
+        Generate
+      </button>
       <div id="paper"></div>
       <div className="overflow-x-auto">
         <div ref={notationRef} className="min-w-max" />
