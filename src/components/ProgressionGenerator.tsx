@@ -55,7 +55,7 @@ export function ProgressionGenerator() {
   function generateProg() {
     const newProgression = randomChordProgression(root, mode);
     setProgression(newProgression);
-    const header = abcHeader({ title: "Test" });
+    const header = abcHeader({ title: `Progression in ${root} ${mode}` });
     const abcString = newProgression.items.map((i) => {
       const inv = inversions[i.numeral];
       const voicedChord = voiceChord(i.chord, octaves[i.numeral], inv);
